@@ -3,231 +3,229 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FaceVision Studio — Privacy-First On-Device Face AI</title>
+    <title>FaceVision — On-Device Facial Analysis &amp; Redaction</title>
     <link rel="stylesheet" href="./styles.css" />
     <script defer src="./face-api.min.js"></script>
     <script type="module" src="./src/main.js"></script>
   </head>
   <body>
-    <div class="app-shell">
-      <header class="topbar">
-        <div class="brand">
-          <div class="brand-badge" aria-hidden="true">FV</div>
-          <div>
-            <h1>FaceVision Studio</h1>
-            <p>100% On-Device Browser AI · Zero Server Uploads · TensorFlow.js</p>
+    <div class="app">
+      <!-- Application Header -->
+      <header class="header">
+        <div class="header-left">
+          <div class="logo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+              <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+              <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+              <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+              <circle cx="12" cy="11" r="3" />
+              <path d="M7 18c1-2.2 2.8-3 5-3s4 .8 5 3" />
+            </svg>
+            <span class="logo-name">FaceVision</span>
           </div>
+
+          <nav class="nav-segmented" role="tablist" aria-label="Workspace modes">
+            <button class="tab-btn active" data-mode="recognition" role="tab" aria-selected="true">
+              Recognition
+            </button>
+            <button class="tab-btn" data-mode="anonymizer" role="tab" aria-selected="false">
+              Anonymizer
+            </button>
+            <button class="tab-btn" data-mode="analytics" role="tab" aria-selected="false">
+              Analytics
+            </button>
+            <button class="tab-btn" data-mode="liveness" role="tab" aria-selected="false">
+              Liveness
+            </button>
+          </nav>
         </div>
 
-        <div class="status-cluster">
-          <span id="modelStatusPill" class="pill amber">Loading AI Models…</span>
-          <span id="fpsPill" class="pill mono">0 FPS</span>
-          <span class="pill accent">On-Device Privacy</span>
+        <div class="header-right">
+          <span class="status-tag subtle" title="All neural inference runs locally in your browser">
+            Local Inference
+          </span>
+          <span id="fpsPill" class="status-tag mono">0 FPS</span>
+          <span id="modelStatusPill" class="status-tag amber">Loading models…</span>
         </div>
       </header>
 
-      <!-- 4 Mode Navigation Tabs -->
-      <nav class="mode-tabs" role="tablist" aria-label="Face AI Modes">
-        <button class="tab-btn active" data-mode="recognition" role="tab" aria-selected="true">
-          <span class="tab-num">01</span>
-          <span>
-            <strong>Face Recognition</strong>
-            <small>Enroll &amp; Match 128-D Embeddings</small>
-          </span>
-        </button>
-        <button class="tab-btn" data-mode="anonymizer" role="tab" aria-selected="false">
-          <span class="tab-num">02</span>
-          <span>
-            <strong>Privacy Anonymizer</strong>
-            <small>Blur, Pixelate &amp; Whitelist Redaction</small>
-          </span>
-        </button>
-        <button class="tab-btn" data-mode="analytics" role="tab" aria-selected="false">
-          <span class="tab-num">03</span>
-          <span>
-            <strong>Emotion &amp; Analytics</strong>
-            <small>Live Mood Timeline &amp; Landmarks</small>
-          </span>
-        </button>
-        <button class="tab-btn" data-mode="liveness" role="tab" aria-selected="false">
-          <span class="tab-num">04</span>
-          <span>
-            <strong>Biometric Liveness</strong>
-            <small>Blink, Smile &amp; Head-Turn MFA Check</small>
-          </span>
-        </button>
-      </nav>
+      <div id="globalAlert" class="toast hidden" role="status" aria-live="polite"></div>
 
-      <div id="globalAlert" class="alert hidden"></div>
-
-      <!-- Main Studio Layout -->
-      <main class="studio-grid">
-        <!-- Left: Live Stage -->
-        <section class="card stage-card">
-          <div class="stage-toolbar">
-            <div class="btn-group">
-              <button id="startWebcamBtn" class="btn primary">Start Webcam</button>
+      <!-- Main Split Workstation -->
+      <main class="workspace">
+        <!-- Left: Camera / Media Viewport -->
+        <section class="stage-column">
+          <div class="toolbar">
+            <div class="toolbar-group">
+              <button id="startWebcamBtn" class="btn primary">Start Camera</button>
               <button id="stopWebcamBtn" class="btn hidden">Stop Camera</button>
-              <label class="btn file-btn">
-                Upload Photo
+              <label class="btn">
+                Open Image…
                 <input id="imageUploadInput" type="file" accept="image/*" hidden />
               </label>
             </div>
 
-            <div class="btn-group">
-              <label class="toggle-inline">
+            <div class="toolbar-group">
+              <label class="checkbox-inline">
                 <input id="mirrorToggle" type="checkbox" checked />
-                Mirror
+                <span>Mirror preview</span>
               </label>
-              <button id="snapshotBtn" class="btn" disabled>Save Snapshot</button>
+              <button id="snapshotBtn" class="btn" disabled>Export PNG</button>
             </div>
           </div>
 
-          <div class="viewport-wrap" id="viewportWrap">
+          <div class="viewport" id="viewportWrap">
             <video id="video" autoplay muted playsinline></video>
             <img id="uploadedImage" alt="Uploaded input" class="hidden" />
             <canvas id="stageCanvas"></canvas>
 
-            <div id="viewportPlaceholder" class="viewport-placeholder">
-              <div class="placeholder-inner">
-                <div class="pulse-ring"></div>
-                <h2>Ready for On-Device Face Analysis</h2>
-                <p>
-                  Click <strong>Start Webcam</strong> for real-time inference or
-                  <strong>Upload Photo</strong> to test with any static image.
-                  All processing happens locally in your browser.
-                </p>
-              </div>
+            <div id="viewportPlaceholder" class="viewport-empty">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                <circle cx="12" cy="13" r="3" />
+              </svg>
+              <p class="empty-title">No media source active</p>
+              <p class="empty-sub">
+                Start your camera for real-time analysis or open a local image file.
+                Frames never leave this browser.
+              </p>
             </div>
           </div>
 
-          <div class="stage-footer">
-            <div class="metric-chip">
-              <span>Faces Detected</span>
-              <strong id="faceCountVal">0</strong>
+          <div class="status-strip">
+            <div class="stat-cell">
+              <span class="stat-label">Source</span>
+              <span id="sourceTypeVal" class="stat-value">Idle</span>
             </div>
-            <div class="metric-chip">
-              <span>Inference Time</span>
-              <strong id="inferenceMsVal">—</strong>
+            <div class="stat-cell">
+              <span class="stat-label">Faces</span>
+              <span id="faceCountVal" class="stat-value mono">0</span>
             </div>
-            <div class="metric-chip">
-              <span>Source</span>
-              <strong id="sourceTypeVal">Idle</strong>
+            <div class="stat-cell">
+              <span class="stat-label">Inference</span>
+              <span id="inferenceMsVal" class="stat-value mono">—</span>
             </div>
-            <div class="metric-chip">
-              <span>Detector Threshold</span>
-              <div class="inline-range">
+            <div class="stat-cell stat-slider">
+              <span class="stat-label">Confidence Threshold</span>
+              <div class="slider-inline">
                 <input id="scoreThresholdInput" type="range" min="0.2" max="0.85" step="0.05" value="0.5" />
-                <strong id="scoreThresholdVal" class="mono">0.50</strong>
+                <span id="scoreThresholdVal" class="stat-value mono">0.50</span>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- Right: Dynamic Mode Inspector -->
-        <aside class="card inspector-card">
-          <!-- Mode 1: Face Recognition -->
+        <!-- Right: Inspector Sidebar -->
+        <aside class="inspector">
+          <!-- Mode 1: Recognition -->
           <div class="mode-panel" data-panel="recognition">
-            <h2>01 · Face Recognition &amp; Enrollment</h2>
-            <p class="muted">
-              Enroll people using 128-dimensional neural face descriptors stored only
-              in your browser&apos;s <code class="mono">localStorage</code>.
-            </p>
+            <div class="panel-header">
+              <h2>Face Recognition</h2>
+              <p>
+                Enroll identities using 128-dimensional embeddings stored locally in
+                your browser.
+              </p>
+            </div>
 
-            <form id="enrollForm" class="stack">
-              <div>
-                <label class="field-label" for="enrollNameInput">Person Name / Label</label>
+            <form id="enrollForm" class="section stack">
+              <div class="field">
+                <label for="enrollNameInput">Identity label</label>
                 <input
                   id="enrollNameInput"
                   class="input"
                   type="text"
-                  placeholder="e.g. Dr. Ranul Thantilage"
+                  placeholder="Full name or ID"
                   required
                 />
               </div>
-              <div class="btn-group">
-                <button type="submit" class="btn primary" id="enrollLiveBtn">
-                  Enroll Current Face
+
+              <div class="btn-row">
+                <button type="submit" class="btn primary grow" id="enrollLiveBtn">
+                  Enroll Active Face
                 </button>
-                <label class="btn file-btn">
-                  Enroll From Photo
+                <label class="btn">
+                  From File…
                   <input id="enrollPhotoInput" type="file" accept="image/*" hidden />
                 </label>
               </div>
-              <label class="toggle-inline">
+
+              <label class="checkbox-inline">
                 <input id="storeEmbeddingOnlyToggle" type="checkbox" checked />
-                Privacy Mode: Store 128-D embeddings only (no face thumbnail saved)
+                <span>Store embeddings only (omit face thumbnails)</span>
               </label>
             </form>
 
-            <div class="divider"></div>
-
-            <div class="row-between">
-              <label class="field-label" style="margin: 0">Match Distance Threshold</label>
-              <strong id="matchThresholdVal" class="mono">0.52</strong>
-            </div>
-            <input
-              id="matchThresholdInput"
-              type="range"
-              min="0.35"
-              max="0.7"
-              step="0.01"
-              value="0.52"
-              class="full-range"
-            />
-            <small class="muted">Lower = stricter identity matching (Euclidean distance).</small>
-
-            <div class="divider"></div>
-
-            <div class="row-between">
-              <h3>Enrolled Profiles (<span id="enrolledCount">0</span>)</h3>
-              <div class="btn-group">
-                <button id="exportProfilesBtn" class="btn small">Export JSON</button>
-                <label class="btn small file-btn">
-                  Import
-                  <input id="importProfilesInput" type="file" accept="application/json" hidden />
-                </label>
-                <button id="clearProfilesBtn" class="btn small danger">Clear</button>
+            <div class="section">
+              <div class="field-header">
+                <label for="matchThresholdInput">Match distance threshold</label>
+                <span id="matchThresholdVal" class="mono value-muted">0.52</span>
               </div>
+              <input
+                id="matchThresholdInput"
+                type="range"
+                min="0.35"
+                max="0.7"
+                step="0.01"
+                value="0.52"
+                class="range"
+              />
+              <p class="hint">Lower Euclidean distance enforces stricter matching.</p>
             </div>
-            <div id="enrolledList" class="profile-list"></div>
+
+            <div class="section">
+              <div class="section-bar">
+                <h3>Enrolled (<span id="enrolledCount">0</span>)</h3>
+                <div class="mini-actions">
+                  <button id="exportProfilesBtn" class="btn-link">Export</button>
+                  <label class="btn-link">
+                    Import
+                    <input id="importProfilesInput" type="file" accept="application/json" hidden />
+                  </label>
+                  <button id="clearProfilesBtn" class="btn-link danger">Clear</button>
+                </div>
+              </div>
+              <div id="enrolledList" class="profile-list"></div>
+            </div>
           </div>
 
-          <!-- Mode 2: Privacy Anonymizer -->
+          <!-- Mode 2: Anonymizer -->
           <div class="mode-panel hidden" data-panel="anonymizer">
-            <h2>02 · On-Device Privacy Anonymizer</h2>
-            <p class="muted">
-              Automatically redact faces in live video or uploaded photos before
-              sharing—everything runs locally on your GPU/CPU.
-            </p>
+            <div class="panel-header">
+              <h2>Privacy Anonymizer</h2>
+              <p>
+                Automatically redact detected faces client-side before exporting or
+                sharing images.
+              </p>
+            </div>
 
-            <div class="stack">
-              <div>
-                <label class="field-label">Redaction Style</label>
-                <div class="radio-grid">
-                  <label class="radio-card">
+            <div class="section stack">
+              <div class="field">
+                <label>Redaction method</label>
+                <div class="option-grid">
+                  <label class="option-item">
                     <input type="radio" name="anonStyle" value="blur" checked />
                     <span>Gaussian Blur</span>
                   </label>
-                  <label class="radio-card">
+                  <label class="option-item">
                     <input type="radio" name="anonStyle" value="pixelate" />
                     <span>Pixelate</span>
                   </label>
-                  <label class="radio-card">
+                  <label class="option-item">
                     <input type="radio" name="anonStyle" value="solid" />
                     <span>Solid Mask</span>
                   </label>
-                  <label class="radio-card">
+                  <label class="option-item">
                     <input type="radio" name="anonStyle" value="mesh" />
-                    <span>Privacy Mesh</span>
+                    <span>Landmark Mesh</span>
                   </label>
                 </div>
               </div>
 
-              <div>
-                <div class="row-between">
-                  <label class="field-label" style="margin: 0">Redaction Strength</label>
-                  <strong id="anonStrengthVal" class="mono">24px</strong>
+              <div class="field">
+                <div class="field-header">
+                  <label for="anonStrengthInput">Intensity</label>
+                  <span id="anonStrengthVal" class="mono value-muted">24px</span>
                 </div>
                 <input
                   id="anonStrengthInput"
@@ -236,18 +234,18 @@
                   max="48"
                   step="2"
                   value="24"
-                  class="full-range"
+                  class="range"
                 />
               </div>
 
-              <label class="toggle-inline">
+              <label class="checkbox-inline">
                 <input id="anonWhitelistToggle" type="checkbox" />
-                Whitelist enrolled faces (keep known faces visible, redact bystanders)
+                <span>Exempt enrolled profiles (redact bystanders only)</span>
               </label>
 
-              <label class="toggle-inline">
+              <label class="checkbox-inline">
                 <input id="anonShowLabelToggle" type="checkbox" checked />
-                Show redaction status badge on masked faces
+                <span>Draw redaction indicator label</span>
               </label>
 
               <button id="downloadAnonBtn" class="btn primary" disabled>
@@ -255,125 +253,139 @@
               </button>
             </div>
 
-            <div class="divider"></div>
-            <div class="info-box">
-              <strong>Redaction Stats</strong>
-              <p id="anonStatsText" class="muted" style="margin: 4px 0 0">
-                Start camera or upload a photo to begin automatic face redaction.
+            <div class="section">
+              <h3>Session Summary</h3>
+              <p id="anonStatsText" class="note-box">
+                Start camera or open an image to redact faces.
               </p>
             </div>
           </div>
 
-          <!-- Mode 3: Emotion & Facial Analytics -->
+          <!-- Mode 3: Analytics -->
           <div class="mode-panel hidden" data-panel="analytics">
-            <h2>03 · Emotion &amp; Facial Analytics</h2>
-            <p class="muted">
-              Real-time 7-class facial expression inference, 68-point landmark mesh,
-              head tilt estimation, and rolling mood timeline.
-            </p>
-
-            <div class="overlay-toggles">
-              <label class="toggle-inline">
-                <input id="analyticsBoxToggle" type="checkbox" checked /> Bounding Box
-              </label>
-              <label class="toggle-inline">
-                <input id="analyticsLandmarksToggle" type="checkbox" checked /> 68 Landmarks
-              </label>
-              <label class="toggle-inline">
-                <input id="analyticsLabelsToggle" type="checkbox" checked /> Labels
-              </label>
+            <div class="panel-header">
+              <h2>Expression &amp; Landmark Analytics</h2>
+              <p>
+                Seven-class expression scoring, 68-point facial geometry, and head
+                roll estimation.
+              </p>
             </div>
 
-            <div class="divider"></div>
-
-            <div class="row-between">
-              <div>
-                <span class="field-label" style="margin: 0">Dominant Expression</span>
-                <div id="dominantEmotionVal" class="dominant-badge">—</div>
-              </div>
-              <div style="text-align: right">
-                <span class="field-label" style="margin: 0">Head Roll Angle</span>
-                <div id="headRollVal" class="mono" style="font-size: 1.05rem">—</div>
+            <div class="section">
+              <div class="checkbox-row">
+                <label class="checkbox-inline">
+                  <input id="analyticsBoxToggle" type="checkbox" checked />
+                  <span>Bounds</span>
+                </label>
+                <label class="checkbox-inline">
+                  <input id="analyticsLandmarksToggle" type="checkbox" checked />
+                  <span>68 Landmarks</span>
+                </label>
+                <label class="checkbox-inline">
+                  <input id="analyticsLabelsToggle" type="checkbox" checked />
+                  <span>Labels</span>
+                </label>
               </div>
             </div>
 
-            <div id="emotionBars" class="emotion-bars"></div>
+            <div class="section">
+              <div class="kpi-pair">
+                <div>
+                  <span class="stat-label">Primary Expression</span>
+                  <div id="dominantEmotionVal" class="kpi-value">—</div>
+                </div>
+                <div style="text-align: right">
+                  <span class="stat-label">Head Roll</span>
+                  <div id="headRollVal" class="kpi-value mono">—</div>
+                </div>
+              </div>
 
-            <div class="divider"></div>
-            <h3>Rolling Mood Timeline (Top Emotions)</h3>
-            <canvas id="emotionChart" width="340" height="120" class="timeline-canvas"></canvas>
+              <div id="emotionBars" class="emotion-bars"></div>
+            </div>
+
+            <div class="section">
+              <div class="section-bar">
+                <h3>Confidence Timeline</h3>
+                <span class="hint">Last 60 frames</span>
+              </div>
+              <canvas id="emotionChart" width="320" height="112" class="timeline-canvas"></canvas>
+            </div>
           </div>
 
-          <!-- Mode 4: Biometric Liveness & Verification -->
+          <!-- Mode 4: Liveness -->
           <div class="mode-panel hidden" data-panel="liveness">
-            <h2>04 · Biometric Liveness &amp; Verification</h2>
-            <p class="muted">
-              Anti-spoofing active liveness check using Eye Aspect Ratio (EAR) blink
-              detection, smile verification, head-turn yaw check, and optional 128-D
-              identity matching.
-            </p>
+            <div class="panel-header">
+              <h2>Biometric Liveness Verification</h2>
+              <p>
+                Active presentation-attack check combining Eye Aspect Ratio (EAR),
+                expression, head yaw, and optional identity matching.
+              </p>
+            </div>
 
-            <div class="stack">
-              <div>
-                <label class="field-label" for="livenessTargetSelect">
-                  Identity Verification Target (Optional)
-                </label>
+            <div class="section stack">
+              <div class="field">
+                <label for="livenessTargetSelect">Verification mode</label>
                 <select id="livenessTargetSelect" class="input">
-                  <option value="">Liveness Only (Any Person)</option>
+                  <option value="">Liveness check only</option>
                 </select>
               </div>
 
-              <div class="btn-group">
-                <button id="startLivenessBtn" class="btn primary">Start Liveness Challenge</button>
+              <div class="btn-row">
+                <button id="startLivenessBtn" class="btn primary grow">
+                  Begin Check
+                </button>
                 <button id="resetLivenessBtn" class="btn">Reset</button>
               </div>
 
-              <div id="livenessBanner" class="info-box">
-                Start your webcam and click <strong>Start Liveness Challenge</strong>.
+              <div id="livenessBanner" class="note-box">
+                Start your camera and click <strong>Begin Check</strong>.
               </div>
+            </div>
 
-              <ol id="livenessSteps" class="challenge-list">
+            <div class="section">
+              <h3>Verification Steps</h3>
+              <ol id="livenessSteps" class="step-list">
                 <li data-step="blink">
-                  <span class="step-dot"></span>
+                  <span class="step-indicator"></span>
                   <div>
-                    <strong>1. Blink Both Eyes</strong>
-                    <small>Verified via 68-landmark Eye Aspect Ratio (EAR)</small>
+                    <strong>Blink both eyes</strong>
+                    <small>Eye Aspect Ratio (EAR) drop &amp; recovery</small>
                   </div>
                 </li>
                 <li data-step="smile">
-                  <span class="step-dot"></span>
+                  <span class="step-indicator"></span>
                   <div>
-                    <strong>2. Smile Naturally</strong>
-                    <small>Verified via expression confidence ≥ 70%</small>
+                    <strong>Smile naturally</strong>
+                    <small>Happy expression score ≥ 70%</small>
                   </div>
                 </li>
                 <li data-step="turn">
-                  <span class="step-dot"></span>
+                  <span class="step-indicator"></span>
                   <div>
-                    <strong>3. Turn Head Left or Right</strong>
-                    <small>Verified via nose-to-jaw horizontal yaw ratio</small>
+                    <strong>Turn head left or right</strong>
+                    <small>Nose-to-jaw horizontal yaw displacement</small>
                   </div>
                 </li>
                 <li data-step="identity" class="hidden">
-                  <span class="step-dot"></span>
+                  <span class="step-indicator"></span>
                   <div>
-                    <strong>4. Match Enrolled Identity</strong>
-                    <small>Verified via 128-D Euclidean face descriptor</small>
+                    <strong>Verify enrolled identity</strong>
+                    <small>128-D face descriptor comparison</small>
                   </div>
                 </li>
               </ol>
 
-              <div class="telemetry-row">
-                <div class="metric-chip">
-                  <span>Live EAR</span>
+              <div class="telemetry-grid">
+                <div class="telemetry-cell">
+                  <span class="stat-label">EAR</span>
                   <strong id="earVal" class="mono">—</strong>
                 </div>
-                <div class="metric-chip">
-                  <span>Yaw Ratio</span>
+                <div class="telemetry-cell">
+                  <span class="stat-label">Yaw</span>
                   <strong id="yawVal" class="mono">—</strong>
                 </div>
-                <div class="metric-chip">
-                  <span>Smile Score</span>
+                <div class="telemetry-cell">
+                  <span class="stat-label">Smile</span>
                   <strong id="smileVal" class="mono">—</strong>
                 </div>
               </div>
