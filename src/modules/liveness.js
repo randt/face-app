@@ -89,9 +89,9 @@ export function createLivenessModule({ getMatcher }) {
     sawEyeClose = false;
     smileFrames = 0;
     turnFrames = 0;
-    banner.className = "note-box";
+    banner.className = "info-box";
     banner.innerHTML =
-      'Start your camera and click <strong>Begin Check</strong>.';
+      'Start your webcam and click <strong>Start Liveness Challenge</strong>.';
     updateStepClasses();
   }
 
@@ -104,7 +104,7 @@ export function createLivenessModule({ getMatcher }) {
     sawEyeClose = false;
     smileFrames = 0;
     turnFrames = 0;
-    banner.className = "note-box";
+    banner.className = "info-box";
     banner.innerHTML =
       "<strong>Step 1:</strong> Look at the camera and <strong>blink naturally</strong>.";
     updateStepClasses();
@@ -115,7 +115,7 @@ export function createLivenessModule({ getMatcher }) {
     if (stepIndex >= steps.length) {
       running = false;
       completed = true;
-      banner.className = "note-box success";
+      banner.className = "info-box success";
       banner.innerHTML = targetLabel
         ? `<strong>VERIFIED:</strong> Live person confirmed &amp; matched enrolled identity <strong>${targetLabel}</strong>.`
         : "<strong>LIVENESS PASSED:</strong> Active anti-spoofing challenges completed successfully.";

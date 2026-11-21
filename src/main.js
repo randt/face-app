@@ -270,12 +270,12 @@ scoreThresholdInput.addEventListener("input", () => {
 async function boot() {
   try {
     await engine.loadModels("./models");
-    modelStatusPill.textContent = "Models ready";
-    modelStatusPill.className = "status-tag green";
+    modelStatusPill.textContent = "4 AI Models Ready";
+    modelStatusPill.className = "pill green";
     recognitionModule.onModelsReady();
   } catch (err) {
-    modelStatusPill.textContent = "Model load failed";
-    modelStatusPill.className = "status-tag red";
+    modelStatusPill.textContent = "Model Load Failed";
+    modelStatusPill.className = "pill red";
     notify(
       `Failed to load AI models (${err.message}). Make sure the app is served over HTTP/HTTPS (e.g. python3 -m http.server).`,
       "error"

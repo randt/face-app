@@ -2,6 +2,12 @@
 
 A unified, zero-backend browser application powered by `face-api.js` (TensorFlow.js) that runs **100% locally on your device**—no images, video frames, or biometric descriptors ever leave the browser.
 
+## Live App
+
+Try the live application directly in your browser (HTTPS webcam & local photo upload supported):
+
+**[https://randt.github.io/face-app/](https://randt.github.io/face-app/)**
+
 ## 4 Interactive AI Modes
 
 1. **Face Recognition & Enrollment**
@@ -25,14 +31,6 @@ Because browsers require HTTP/HTTPS to load ES Modules, AI model weights, and we
 python3 -m http.server 8000
 # then open http://localhost:8000
 ```
-
-## Deploying Free on GitHub Pages
-
-All asset and model paths use relative URLs (`./models`), so the repository works out-of-the-box on GitHub Pages:
-
-1. Open your repository on GitHub → **Settings** → **Pages**.
-2. Under **Build and deployment**, select **Deploy from a branch** → `main` → `/ (root)` → **Save**.
-3. Your live studio will be available at `https://randt.github.io/face-app/`.
 
 ## License
 
