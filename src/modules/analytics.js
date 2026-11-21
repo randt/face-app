@@ -1,11 +1,11 @@
 const EMOTIONS = [
-  { key: "happy", label: "Happy", color: "#10b981" },
-  { key: "neutral", label: "Neutral", color: "#38bdf8" },
-  { key: "surprised", label: "Surprised", color: "#f59e0b" },
-  { key: "sad", label: "Sad", color: "#818cf8" },
-  { key: "angry", label: "Angry", color: "#f43f5e" },
-  { key: "fearful", label: "Fearful", color: "#c084fc" },
-  { key: "disgusted", label: "Disgusted", color: "#84cc16" },
+  { key: "happy", label: "Happy", color: "#09090b" },
+  { key: "neutral", label: "Neutral", color: "#52525b" },
+  { key: "surprised", label: "Surprised", color: "#27272a" },
+  { key: "sad", label: "Sad", color: "#71717a" },
+  { key: "angry", label: "Angry", color: "#3f3f46" },
+  { key: "fearful", label: "Fearful", color: "#a1a1aa" },
+  { key: "disgusted", label: "Disgusted", color: "#18181b" },
 ];
 
 function projectPoint(pt, width, mirrored) {
@@ -119,7 +119,7 @@ export function createAnalyticsModule() {
         const [topName, topScore] = sorted[0] || ["neutral", 0];
 
         if (boxToggle.checked) {
-          ctx.strokeStyle = "#14b8a6";
+          ctx.strokeStyle = "#ffffff";
           ctx.lineWidth = 2;
           ctx.strokeRect(box.x, box.y, box.width, box.height);
         }
@@ -128,7 +128,7 @@ export function createAnalyticsModule() {
           const pts = det.landmarks.positions.map((p) =>
             projectPoint(p, width, mirrored)
           );
-          ctx.fillStyle = "#38bdf8";
+          ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
           for (const p of pts) {
             ctx.beginPath();
             ctx.arc(p.x, p.y, 1.8, 0, Math.PI * 2);
@@ -138,12 +138,12 @@ export function createAnalyticsModule() {
 
         if (labelsToggle.checked) {
           const text = `${topName} ${(topScore * 100).toFixed(0)}%`;
-          ctx.font = "600 13px Inter, sans-serif";
+          ctx.font = "600 13px -apple-system, BlinkMacSystemFont, Inter, sans-serif";
           const tw = ctx.measureText(text).width;
           const by = Math.max(0, box.y - 24);
-          ctx.fillStyle = "#14b8a6";
+          ctx.fillStyle = "#09090b";
           ctx.fillRect(box.x, by, tw + 14, 24);
-          ctx.fillStyle = "#04131c";
+          ctx.fillStyle = "#ffffff";
           ctx.fillText(text, box.x + 7, by + 16);
         }
       }

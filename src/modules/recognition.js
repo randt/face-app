@@ -223,31 +223,34 @@ export function createRecognitionModule({ engine, getActiveSource, notify, onPro
       for (const det of detections) {
         const box = projectBox(det.detection.box, width, mirrored);
         let label = "Unknown";
-        let color = "#f59e0b";
+        let matched = false;
 
         if (matcher && det.descriptor) {
           const match = matcher.findBestMatch(det.descriptor);
           const similarity = Math.max(0, Math.round((1 - match.distance) * 100));
           if (match.label !== "unknown") {
             label = `${match.label} (${similarity}%)`;
-            color = "#10b981";
+            matched = true;
           } else {
-            label = `Unknown (dist ${match.distance.toFixed(2)})`;
+            label = `Unknown (${match.distance.toFixed(2)})`;
           }
         }
 
-        // Bounding box
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2.5;
+        // Bounding box (clean monochrome)
+        ctx.save();
+        ctx.strokeStyle = matched ? "#ffffff" : "#a1a1aa";
+        ctx.lineWidth = matched ? 2.5 : 1.75;
+        if (!matched) ctx.setLineDash([6, 4]);
         ctx.strokeRect(box.x, box.y, box.width, box.height);
+        ctx.restore();
 
         // Label banner
-        ctx.font = "600 13px Inter, sans-serif";
+        ctx.font = "600 13px -apple-system, BlinkMacSystemFont, Inter, sans-serif";
         const textW = ctx.measureText(label).width;
         const bannerY = Math.max(0, box.y - 24);
-        ctx.fillStyle = color;
+        ctx.fillStyle = matched ? "#09090b" : "rgba(24, 24, 27, 0.82)";
         ctx.fillRect(box.x, bannerY, textW + 14, 24);
-        ctx.fillStyle = "#04131c";
+        ctx.fillStyle = "#ffffff";
         ctx.fillText(label, box.x + 7, bannerY + 16);
       }
     },

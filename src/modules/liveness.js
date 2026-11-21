@@ -217,10 +217,10 @@ export function createLivenessModule({ getMatcher }) {
         }
       }
 
-      // Draw live HUD ring around face
-      const ringColor = completed ? "#10b981" : running ? "#f59e0b" : "#38bdf8";
+      // Draw live HUD ring around face (crisp monochrome)
+      const ringColor = completed ? "#ffffff" : running ? "#e4e4e7" : "#a1a1aa";
       ctx.strokeStyle = ringColor;
-      ctx.lineWidth = 3;
+      ctx.lineWidth = completed ? 3 : 2;
       ctx.strokeRect(box.x, box.y, box.width, box.height);
 
       const promptText = completed
@@ -229,12 +229,12 @@ export function createLivenessModule({ getMatcher }) {
         ? `STEP ${stepIndex + 1}/${steps.length}: ${steps[stepIndex].toUpperCase()}`
         : "READY FOR LIVENESS CHECK";
 
-      ctx.font = "700 13px Inter, sans-serif";
+      ctx.font = "700 12px -apple-system, BlinkMacSystemFont, Inter, sans-serif";
       const tw = ctx.measureText(promptText).width;
       const by = Math.max(0, box.y - 26);
-      ctx.fillStyle = ringColor;
+      ctx.fillStyle = "#09090b";
       ctx.fillRect(box.x, by, tw + 16, 26);
-      ctx.fillStyle = "#04131c";
+      ctx.fillStyle = "#ffffff";
       ctx.fillText(promptText, box.x + 8, by + 17);
     },
   };

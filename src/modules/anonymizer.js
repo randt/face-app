@@ -110,15 +110,15 @@ export function createAnonymizerModule({ getMatcher, getStageCanvas }) {
     const padX = box.width * 0.08;
     const padY = box.height * 0.1;
     ctx.save();
-    ctx.fillStyle = "#040812";
+    ctx.fillStyle = "#09090b";
     ctx.fillRect(
       box.x - padX,
       box.y - padY,
       box.width + padX * 2,
       box.height + padY * 2
     );
-    ctx.strokeStyle = "#14b8a6";
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.25;
     ctx.strokeRect(
       box.x - padX,
       box.y - padY,
@@ -142,15 +142,15 @@ export function createAnonymizerModule({ getMatcher, getStageCanvas }) {
       0,
       Math.PI * 2
     );
-    ctx.fillStyle = "#091326";
+    ctx.fillStyle = "#09090b";
     ctx.fill();
-    ctx.strokeStyle = "rgba(20, 184, 166, 0.7)";
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
+    ctx.lineWidth = 1.25;
     ctx.stroke();
 
     if (landmarks) {
       const pts = landmarks.positions.map((p) => projectPoint(p, width, mirrored));
-      ctx.fillStyle = "#5eead4";
+      ctx.fillStyle = "#ffffff";
       for (const p of pts) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, 1.8, 0, Math.PI * 2);
@@ -184,15 +184,15 @@ export function createAnonymizerModule({ getMatcher, getStageCanvas }) {
         if (exemptLabel) {
           whitelistedCount += 1;
           if (showLabels) {
-            ctx.strokeStyle = "#10b981";
+            ctx.strokeStyle = "#ffffff";
             ctx.lineWidth = 2;
             ctx.strokeRect(box.x, box.y, box.width, box.height);
-            ctx.font = "600 12px Inter, sans-serif";
-            const badge = `WHITELISTED: ${exemptLabel}`;
+            ctx.font = "600 12px -apple-system, BlinkMacSystemFont, Inter, sans-serif";
+            const badge = `EXEMPT: ${exemptLabel}`;
             const tw = ctx.measureText(badge).width;
-            ctx.fillStyle = "#10b981";
+            ctx.fillStyle = "#09090b";
             ctx.fillRect(box.x, Math.max(0, box.y - 22), tw + 12, 22);
-            ctx.fillStyle = "#04131c";
+            ctx.fillStyle = "#ffffff";
             ctx.fillText(badge, box.x + 6, Math.max(15, box.y - 7));
           }
           continue;
@@ -208,9 +208,9 @@ export function createAnonymizerModule({ getMatcher, getStageCanvas }) {
           ctx.font = "700 11px ui-monospace, monospace";
           const tag = `REDACTED (${style.toUpperCase()})`;
           const tw = ctx.measureText(tag).width;
-          ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
+          ctx.fillStyle = "rgba(9, 9, 11, 0.88)";
           ctx.fillRect(box.x, Math.max(0, box.y - 20), tw + 10, 20);
-          ctx.fillStyle = "#5eead4";
+          ctx.fillStyle = "#ffffff";
           ctx.fillText(tag, box.x + 5, Math.max(14, box.y - 6));
         }
       }
